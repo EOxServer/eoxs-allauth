@@ -72,7 +72,7 @@ class ESASignupForm(forms.Form):
     executive_summary = forms.CharField(
         max_length=3000,
         widget=forms.Textarea(attrs={
-            'placeholder': 'We intend to use the SWARM data as part of ...',
+            'placeholder': 'We intend to use the ADM-AEOLUS data as part of ...',
             'rows': 4
         }),
         required=False,

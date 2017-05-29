@@ -7,7 +7,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ows="http://www.opengis.n
   <HTML lang="en">
 
   <HEAD>
-    <title>VirES for Swarm</title>
+    <title>VirES for Aeolus</title>
     <link rel="stylesheet" type="text/css" href="/eoxs_static/workspace/styles/main.css" />
     <script type="text/javascript" src="/eoxs_static/workspace/bower_components/jquery/jquery.min.js"/>
     <script type="text/javascript" src="/eoxs_static/workspace/bower_components/bootstrap/dist/js/bootstrap.min.js"/>
@@ -31,7 +31,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ows="http://www.opengis.n
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-            <a class="navbar-brand" href="/" style="font-size:30px">VirES for Swarm</a>
+            <a class="navbar-brand" href="/" style="font-size:30px">VirES for Aeolus</a>
         </div>
         <div class="navbar-collapse collapse">
         </div>
