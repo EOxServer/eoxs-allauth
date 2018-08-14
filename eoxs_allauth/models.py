@@ -29,6 +29,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
+from allauth.account.adapter import DefaultAccountAdapter
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
@@ -41,3 +42,8 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return "<UserProfile: %s>" % self.user
+
+
+class MyAccountAdapter(DefaultAccountAdapter):    
+    def is_open_for_signup(self, request):
+        return False
