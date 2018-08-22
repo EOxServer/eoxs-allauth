@@ -31,6 +31,7 @@ from django.db.models.signals import post_migrate
 from django.contrib.auth.models import User
 from .models import UserProfile
 from . import signals # needed to initialize signal receivers
+from allauth.account.adapter import DefaultAccountAdapter
 
 
 class EOxServerAllauthConfig(AppConfig):
@@ -45,3 +46,15 @@ class EOxServerAllauthConfig(AppConfig):
                     UserProfile.objects.get_or_create(user=user)
 
         post_migrate.connect(create_profiles, sender=self)
+
+
+
+class NoNewUsersAccountAdapter(DefaultAccountAdapter):
+    def is_open_for_signup(self, request):
+        """
+        Checks whether or not the site is open for signups.
+        Next to simply returning True/False you can also intervene the
+        regular flow by raising an ImmediateHttpResponse
+        (Comment reproduced from the overridden method.)
+        """
+        return False
