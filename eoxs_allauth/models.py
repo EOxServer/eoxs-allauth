@@ -30,8 +30,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django_countries.fields import CountryField
 
+
 class UserProfile(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, blank=True)
     institution = models.CharField(max_length=100, blank=True)
     country = CountryField(blank=True, blank_label='(select country)')
