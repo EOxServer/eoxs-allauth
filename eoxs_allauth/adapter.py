@@ -1,10 +1,10 @@
 #-------------------------------------------------------------------------------
 #
 # Project: EOxServer - django-allauth integration.
-# Authors: Daniel Santillan <daniel.santillan@eox.at>
+# Authors: Fabian Schindler <fabian.schindler@eox.at>
 #
 #-------------------------------------------------------------------------------
-# Copyright (C) 2016 EOX IT Services GmbH
+# Copyright (C) 2020 EOX IT Services GmbH
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,23 +26,15 @@
 #-------------------------------------------------------------------------------
 # pylint: disable=missing-docstring, unused-argument
 
-from django.apps import AppConfig
-from django.db.models.signals import post_migrate
-from . import signals  # needed to initialize signal receivers
+from allauth.account.adapter import DefaultAccountAdapter
 
 
-class EOxServerAllauthConfig(AppConfig):
-    name = 'eoxs_allauth'
-    verbose_name = "EOxServer allauth"
-
-    def ready(self):
-
-        def create_profiles(sender, **kwargs):
-            from django.contrib.auth.models import User
-            from .models import UserProfile
-
-            if sender.name == self.name:
-                for user in User.objects.all():
-                    UserProfile.objects.get_or_create(user=user)
-
-        post_migrate.connect(create_profiles, sender=self)
+class NoNewUsersAccountAdapter(DefaultAccountAdapter):
+    def is_open_for_signup(self, request):
+        """
+        Checks whether or not the site is open for signups.
+        Next to simply returning True/False you can also intervene the
+        regular flow by raising an ImmediateHttpResponse
+        (Comment reproduced from the overridden method.)
+        """
+        return False
