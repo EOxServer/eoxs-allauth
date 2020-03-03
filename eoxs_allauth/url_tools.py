@@ -29,7 +29,14 @@
 # pylint: disable=missing-docstring
 
 from types import ModuleType
-from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
+try:
+    from django.urls import URLPattern, URLResolver
+except ImportError:
+    from django.core.urlresolvers import (
+        RegexURLPattern as URLPattern,
+        RegexURLResolver as URLResolver
+    )
+
 
 def decorate_pattern(pattern, decorator, pattern_filter=None):
     """ Generator decorating a URL pattern's callback by the given decorator if
@@ -39,7 +46,7 @@ def decorate_pattern(pattern, decorator, pattern_filter=None):
     True or False.
     """
     if pattern_filter is None or pattern_filter(pattern):
-        pattern = RegexURLPattern(
+        pattern = URLPattern(
             pattern.regex.pattern,
             decorator(pattern.callback),
             pattern.default_args,
@@ -56,7 +63,7 @@ def decorate_resolver(resolver, decorator, pattern_filter=None):
     The filter is a simple function receiving a pattern object and returning
     True or False.
     """
-    return RegexURLResolver(
+    return URLResolver(
         resolver.regex.pattern,
         decorate(resolver.url_patterns, decorator, pattern_filter),
         resolver.default_kwargs,
@@ -74,9 +81,9 @@ def decorate(url_patterns, decorator, pattern_filter=None):
     """
     def _decorate(pattern):
         """ Decorate one pattern """
-        if isinstance(pattern, RegexURLPattern):
+        if isinstance(pattern, URLPattern):
             return decorate_pattern(pattern, decorator, pattern_filter)
-        elif isinstance(pattern, RegexURLResolver):
+        elif isinstance(pattern, URLResolver):
             return decorate_resolver(pattern, decorator, pattern_filter)
         else:
             raise ValueError("Unexpected pattern type %r!" % pattern)
