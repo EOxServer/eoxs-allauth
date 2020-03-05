@@ -63,13 +63,14 @@ def decorate_resolver(resolver, decorator, pattern_filter=None):
     The filter is a simple function receiving a pattern object and returning
     True or False.
     """
-    return URLResolver(
-        resolver.regex.pattern,
-        decorate(resolver.url_patterns, decorator, pattern_filter),
-        resolver.default_kwargs,
-        resolver.app_name,
-        resolver.namespace
-    )
+    return resolver
+    # return URLResolver(
+    #     resolver.regex.pattern,
+    #     decorate(resolver.url_patterns, decorator, pattern_filter),
+    #     resolver.default_kwargs,
+    #     resolver.app_name,
+    #     resolver.namespace
+    # )
 
 
 def decorate(url_patterns, decorator, pattern_filter=None):
