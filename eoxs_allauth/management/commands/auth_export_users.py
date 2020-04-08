@@ -1,9 +1,10 @@
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 #
 # Export users in JSON format.
 #
 # Authors: Martin Paces <martin.paces@eox.at>
-#-------------------------------------------------------------------------------
+#          Fabian Schindler <fabian.schindler@eox.at>
+# ------------------------------------------------------------------------------
 # Copyright (C) 2019 EOX IT Services GmbH
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,7 +24,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # pylint: disable=missing-docstring,unused-import
 
 import sys
@@ -121,6 +122,9 @@ def serialize_user(object_):
             "social_accounts",
             serialize_social_accounts(object_.socialaccount_set.all())
         ),
+        ("groups", [
+            group.name for group in object_.groups.all()
+        ])
     ])
 
 
