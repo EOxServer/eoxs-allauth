@@ -1,9 +1,10 @@
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 #
 # Export users in JSON format.
 #
 # Authors: Martin Paces <martin.paces@eox.at>
-#-------------------------------------------------------------------------------
+#          Fabian Schindler <fabian.schindler@eox.at>
+# ------------------------------------------------------------------------------
 # Copyright (C) 2019 EOX IT Services GmbH
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,7 +24,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # pylint: disable=missing-docstring,unused-import
 
 import sys
@@ -31,10 +32,10 @@ import json
 from functools import partial
 from collections import OrderedDict
 from optparse import make_option
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from eoxserver.resources.coverages.management.commands import (
-    CommandOutputMixIn, #nested_commit_on_success
+    CommandOutputMixIn,
 )
 from ...models import UserProfile
 
@@ -111,7 +112,7 @@ def serialize_user(object_):
         ("last_login", datetime_to_string(object_.last_login)),
         ("first_name", object_.first_name),
         ("last_name", object_.last_name),
-        ("email", object_.email), # copy of the primary e-mail
+        ("email", object_.email),  # copy of the primary e-mail
         (
             "user_profile",
             serialize_user_profile(user_profile) if user_profile else None
@@ -124,6 +125,9 @@ def serialize_user(object_):
             "social_accounts",
             serialize_social_accounts(object_.socialaccount_set.all())
         ),
+        ("groups", [
+            group.name for group in object_.groups.all()
+        ])
     ])
 
 
