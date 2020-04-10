@@ -63,7 +63,7 @@ def access_logging_middleware(get_response):
         return ERROR
 
     def middleware(request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             type_, level = "A", getattr(get_response, 'log_level_auth', INFO)
         else:
             type_, level = "N", getattr(get_response, 'log_level_unauth', INFO)
