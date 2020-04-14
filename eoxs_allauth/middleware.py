@@ -31,7 +31,21 @@
 from logging import getLogger, INFO, WARNING, ERROR, LoggerAdapter
 from django.contrib.auth import logout
 
-LOGGER = getLogger("eoxs_allauth.access")
+LOGGER = getLogger("access")
+
+
+def get_remote_addr(request):
+    """ Extract remote address from the Django HttpRequest """
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        return x_forwarded_for.partition(',')[0]
+    return request.META.get('REMOTE_ADDR')
+
+
+def get_username(user):
+    """ Extract username of the authenticated user or return None
+    """
+    return user.username if user and user.is_authenticated else None
 
 
 class AccessLoggerAdapter(LoggerAdapter):
@@ -63,19 +77,24 @@ def access_logging_middleware(get_response):
         return ERROR
 
     def middleware(request):
+        logger = AccessLoggerAdapter(
+            logger=LOGGER,
+            username=get_username(request.user),
+            remote_addr=get_remote_addr(request),
+        )
         if request.user.is_authenticated:
             type_, level = "A", getattr(get_response, 'log_level_auth', INFO)
         else:
             type_, level = "N", getattr(get_response, 'log_level_unauth', INFO)
-        LOGGER.log(level, "%s %s %s", type_, request.method, request.path)
+        logger.log(level, "%s %s %s", type_, request.method, request.path)
 
         response = get_response(request)
         """ Log response status. """
         # Warn in case of an error.
-        level = WARNING if response.status_code >= 400 else INFO
-        LOGGER.log(
-            level, "R %s %s %s %s ", request.method, request.path,
-            response.status_code, response.reason_phrase,
+        logger.log(
+            get_log_level(response.status_code, request.user.is_authenticated),
+            "R %s %s %s %s ", request.method, request.path, response.status_code,
+            response.reason_phrase,
         )
         return response
 
