@@ -69,7 +69,7 @@ class Command(ConsoleOutput, BaseCommand):
         data = [serialize_user(user) for user in query]
 
         filename = kwargs["file"]
-        with (sys.stdout if filename == "-" else open(filename, "wb")) as file_:
+        with (sys.stdout if filename == "-" else open(filename, "w")) as file_:
             json.dump(data, file_, **JSON_OPTS)
 
 
