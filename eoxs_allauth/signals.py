@@ -38,39 +38,59 @@ from allauth.account.signals import (
 from allauth.socialaccount.signals import (
     pre_social_login, social_account_added, social_account_removed,
 )
+from eoxs_allauth.middleware import (
+    AccessLoggerAdapter, get_username, get_remote_addr
+)
+
 
 LOGGER = getLogger("eoxs_allauth.allauth")
 
 
+def get_adapted_logger(request):
+    return AccessLoggerAdapter(
+        logger=LOGGER,
+        username=get_username(request.user),
+        remote_addr=get_remote_addr(request),
+    )
+
+
+def get_adapted_logger_from_email(email_address):
+    return AccessLoggerAdapter(
+        logger=LOGGER,
+        username=get_username(email_address.user),
+        remote_addr=None,
+    )
+
+
 @receiver(user_logged_in)
 def receive_user_logged_in(request, user, **kwargs):
-    LOGGER.info("%s logged in", user)
+    get_adapted_logger(request).info("%s logged in", user)
 
 
 @receiver(user_signed_up)
 def receive_user_signed_up(request, user, **kwargs):
-    LOGGER.info("%s signed up", user)
+    get_adapted_logger(request).info("%s signed up", user)
 
 
 @receiver(password_set)
 def receive_password_set(request, user, **kwargs):
-    LOGGER.info("%s set password ", user)
+    get_adapted_logger(request).info("%s set password ", user)
 
 
 @receiver(password_changed)
 def receive_password_changed(request, user, **kwargs):
-    LOGGER.info("%s changed password", user)
+    get_adapted_logger(request).info("%s changed password", user)
 
 
 @receiver(password_reset)
 def receive_password_reset(request, user, **kwargs):
-    LOGGER.info("%s reset password", user)
+    get_adapted_logger(request).info("%s reset password", user)
 
 
 @receiver(email_changed)
 def receive_email_changed(request, user, from_email_address, to_email_address,
                           **kwargs):
-    LOGGER.info(
+    get_adapted_logger(request).info(
         "%s changed primary e-mail address from %s to %s",
         user, from_email_address.email, to_email_address.email
     )
@@ -78,17 +98,21 @@ def receive_email_changed(request, user, from_email_address, to_email_address,
 
 @receiver(email_added)
 def receive_email_added(request, user, email_address, **kwargs):
-    LOGGER.info("%s added e-mail address %s", user, email_address.email)
+    get_adapted_logger(request).info(
+        "%s added e-mail address %s", user, email_address.email
+    )
 
 
 @receiver(email_removed)
 def receive_email_removed(request, user, email_address, **kwargs):
-    LOGGER.info("%s removed e-mail address %s", user, email_address.email)
+    get_adapted_logger(request).info(
+        "%s removed e-mail address %s", user, email_address.email
+    )
 
 
 @receiver(email_confirmed)
 def receive_email_confirmed(email_address, **kwargs):
-    LOGGER.info(
+    get_adapted_logger_from_email(email_address).info(
         "%s confirmed e-mail address %s",
         email_address.user, email_address.email
     )
@@ -96,7 +120,7 @@ def receive_email_confirmed(email_address, **kwargs):
 
 @receiver(email_confirmation_sent)
 def receive_email_confirmation_sent(confirmation, **kwargs):
-    LOGGER.info(
+    get_adapted_logger_from_email(confirmation.email_address).info(
         "%s was sent a request to confirm e-mail address %s",
         confirmation.email_address.user, confirmation.email_address.email
     )
@@ -104,7 +128,7 @@ def receive_email_confirmation_sent(confirmation, **kwargs):
 
 @receiver(pre_social_login)
 def receive_pre_social_login(request, sociallogin, **kwargs):
-    LOGGER.debug(
+    get_adapted_logger(request).debug(
         "%s: %s, %s", sociallogin, sociallogin.user, sociallogin.email_addresses
     )
     # TODO: find a better way how to guess the user's identity
@@ -126,13 +150,13 @@ def receive_pre_social_login(request, sociallogin, **kwargs):
 
 @receiver(social_account_added)
 def receive_social_account_added(request, sociallogin, **kwargs):
-    LOGGER.info(
+    get_adapted_logger(request).info(
         "%s added %s account", sociallogin.user, sociallogin.account.provider
     )
 
 
 @receiver(social_account_removed)
 def receive_social_account_removed(request, socialaccount, **kwargs):
-    LOGGER.info(
+    get_adapted_logger(request).info(
         "%s removed %s account", socialaccount.user, socialaccount.provider
     )

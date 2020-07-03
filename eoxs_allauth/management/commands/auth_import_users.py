@@ -39,10 +39,11 @@ from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
 from ...models import UserProfile
 from ._common import ConsoleOutput
+from ...middleware import AccessLoggerAdapter
 
 
 class Command(ConsoleOutput, BaseCommand):
-    logger = getLogger(__name__)
+    logger = AccessLoggerAdapter(logger=getLogger(__name__))
 
     help = "Import users from a JSON file."
 
